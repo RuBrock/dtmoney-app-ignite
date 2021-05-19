@@ -1,23 +1,9 @@
-import { useEffect, useState } from 'react';
-import { api } from '../../services/api';
+import { useTransactions } from '../../hooks/useTransactions';
+import { formatPrice } from '../../utils/formatting/priceFormat';
 import { Container } from './styles';
 
-interface Transaction {
-  id: number;
-  title: string;
-  type: string;
-  category: string;
-  amount: number;
-  createdAt: string;
-}
-
 export function TransactionsTable() {
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
-
-  useEffect(() => {
-    api.get('/transactions')
-      .then(response => setTransactions(response.data.transactions));
-  }, []);
+  const { transactions } = useTransactions();
 
   return (
     <Container>
@@ -36,10 +22,7 @@ export function TransactionsTable() {
             <tr key={transaction.id}>
               <td>{transaction.title}</td>
               <td className={transaction.type}>
-                {new Intl.NumberFormat('pt-BR', {
-                  style: 'currency',
-                  currency: 'BRL'
-                }).format(transaction.amount)}
+                {formatPrice(transaction.amount)}
               </td>
               <td>{transaction.category}</td>
               <td>
